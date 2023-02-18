@@ -6,9 +6,9 @@ build-backend = "setuptools.build_meta"
 name = "psdf_suction"
 version = "0.0.1"
 authors = [
-  { name="Example Author", email="author@example.com" },
+  { name="yisenlin", email="ysl.130@qq.com" },
 ]
-description = "A small example package"
+description = "psdf suction python package"
 readme = "README.md"
 requires-python = ">=3.7"
 classifiers = [
