@@ -1,6 +1,6 @@
 import torch
 import numpy as np
-from utils import compute_surface_normal,get_torch_device
+from .utils import compute_surface_normal,get_torch_device
 
 class PSDF:
     def __init__(self, shape, resolution, device=get_torch_device(), with_color=False):
