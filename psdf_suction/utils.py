@@ -1,7 +1,5 @@
 import numpy as np
 from scipy.spatial.transform import Rotation as R
-from std_msgs.msg import Float32MultiArray, MultiArrayDimension
-import geometry_msgs.msg
 import torch
 import cv2
 
@@ -26,14 +24,11 @@ def transform2matrix(transform):
     return T
 
 def pose2mat(pose):
-    if isinstance(pose, geometry_msgs.msg.Pose):
-        t = np.array([pose.position.x, pose.position.y, pose.position.z])
-        q = np.array([pose.orientation.x,pose.orientation.y,pose.orientation.z,pose.orientation.w])
-    elif isinstance(pose, list):
+    if isinstance(pose, list):
         t = pose[:3]
         q = pose[3:]
     else:
-        print("pose should in type ", geometry_msgs.msg.Pose, "or", list)
+        print("pose should in type ", list)
     T = np.eye(4)
     try:
         T[:3, :3] = R.from_quat(q).as_dcm()
@@ -47,19 +42,6 @@ def clip_joint(joint_positions):
     filter = np.abs(joint_positions) > np.pi
     joint_positions[filter] = joint_positions[filter] - np.pi * 2
     return joint_positions
-
-def numpy2multiarray(data):
-    data_buffer = Float32MultiArray()
-    for dim in data.shape:
-        data_buffer.layout.dim.append(MultiArrayDimension(size=dim))
-    data_buffer.data = data.reshape(-1).tolist()
-    return data_buffer
-
-def multiarray2numpy(data_buffer):
-    shape = []
-    for dim in data_buffer.layout.dim:
-        shape.append(dim.size)
-    return np.array(data_buffer.data, dtype=np.float32).reshape(shape)
 
 def trilinear_interpolate_torch(idx, f):
     """
@@ -217,3 +199,10 @@ def compute_score(graspable_map, point_map, normal_map, position_pre, EPSILON=1e
 
     score = dist_weight * normal_weight * range_weight
     return score
+
+def get_torch_device():
+    if torch.cuda.is_available():
+        return 'cuda:0'
+    
+    return 'cpu'
+    
