@@ -237,7 +237,10 @@ class PSDF:
         variances_map[~surface_mask_flat] = 10
 
         # get color map
-        color_map = psdf.rgb.take(z_flat)
+        color_map = None
+        if self.with_color:
+            color_map = psdf.rgb.take(z_flat)
+            color_map = color_map.cpu().numpy()
 
         # re-arrangement
         # variances_map = torch.flip(variances_map, dims=[0,1])
@@ -248,5 +251,5 @@ class PSDF:
         return (point_map.cpu().numpy(), 
                 normal_map.cpu().numpy(), 
                 variances_map.cpu().numpy(), 
-                color_map.cpu().numpy())
+                color_map)
 

@@ -11,6 +11,7 @@ except Exception as err:
     print('Warning: {}'.format(err))
     print('Failed to import PyCUDA.')
     exit()
+import atexit
 
 
 # Warning:do not delete!This just prepares for interaction between torch and cuda.
@@ -47,6 +48,7 @@ class VacuumCupAnalyser(object):
         self.natural_flexion = np.linalg.norm(self.vertices[:, 0] - self.vertices[:, 2])
 
         self.ctx = cuda.Device(0).make_context()
+        atexit.register(self.cleanup)
         c_file = open(os.path.join(os.path.dirname(__file__), "vacuum_cup_analyser.cpp"), 'r')
         c_string = c_file.read()
         self._cuda_src_mod = SourceModule(c_string)
@@ -115,3 +117,8 @@ class VacuumCupAnalyser(object):
             vertices.append([np.sin(curr_angle) * self.radius, np.cos(curr_angle) * self.radius, self.height])
         vertices = np.array(vertices, dtype=np.float32)
         return apex, base_center, vertices.T
+
+    def cleanup(self):
+        print("Running cleanup start")
+        self.ctx.pop()
+        print("Running cleanup end")
