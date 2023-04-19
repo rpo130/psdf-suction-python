@@ -208,7 +208,7 @@ class PSDF:
         # find surface point
         #(250,250,250)
         surface_mask = psdf.sdf <= 0.01
-        # max in z direction
+        # max in z direction, [values, indices]
         surface_mask_flat = torch.max(surface_mask, dim=-1)[0]
 
         # get height map
@@ -248,8 +248,12 @@ class PSDF:
         # # normals = torch.flip(normals, dims=[0,1])
         # color_map = torch.flip(color_map, dims=[0,1])
 
-        return (point_map.cpu().numpy(), 
-                normal_map.cpu().numpy(), 
-                variances_map.cpu().numpy(), 
+        point_map = point_map.cpu().numpy()
+        normal_map = normal_map.cpu().numpy()
+        variances_map = variances_map.cpu().numpy()
+
+        return (point_map,
+                normal_map,
+                variances_map,
                 color_map)
 
